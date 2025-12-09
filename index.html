@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Darkwave Player - Ultimate</title>
+<title>Darkwave Player - Compact</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet"/>
@@ -21,7 +21,8 @@
             "display": ["Spline Sans", "sans-serif"]
           },
           animation: {
-            'vibrate': 'vibrate 0.3s linear infinite',
+            'slide-in': 'slideIn 0.3s ease-out forwards',
+            'fade-in': 'fadeIn 0.3s ease-out forwards',
           }
         },
       },
@@ -42,12 +43,20 @@
         -webkit-tap-highlight-color: transparent;
     }
 
-    /* --- EFEITOS DE CORES --- */
+    /* --- ANIMAÇÕES --- */
+    @keyframes slideIn {
+        from { transform: translateX(-100%); }
+        to { transform: translateX(0); }
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
     @keyframes rainbow-border {
         0% { border-color: #9d00ff; box-shadow: 0 0 10px #9d00ff; }
-        25% { border-color: #ff004c; box-shadow: 0 0 10px #ff004c; }
-        50% { border-color: #ffff00; box-shadow: 0 0 10px #ffff00; }
-        75% { border-color: #00eaff; box-shadow: 0 0 10px #00eaff; }
+        50% { border-color: #ff004c; box-shadow: 0 0 10px #ff004c; }
         100% { border-color: #9d00ff; box-shadow: 0 0 10px #9d00ff; }
     }
 
@@ -56,57 +65,52 @@
         transform: scale(0.95);
     }
 
-    /* --- BARRA CARDÍACA (Pulsar) --- */
+    /* --- BARRA CARDÍACA --- */
     @keyframes heartbeat-bar {
         0% { height: 100%; opacity: 0.8; background: var(--neon-primary); }
-        20% { height: 60%; opacity: 0.6; background: #ffff00; } /* Amarelo */
-        40% { height: 120%; opacity: 1; background: #ff0000; box-shadow: 0 0 20px #ff0000; } /* Vermelho Explosão */
-        60% { height: 50%; opacity: 0.7; background: #00eaff; } /* Azul */
-        80% { height: 90%; opacity: 0.9; background: var(--neon-secondary); }
+        50% { height: 40%; opacity: 1; background: #ff0000; box-shadow: 0 0 15px #ff0000; }
         100% { height: 100%; opacity: 0.8; background: var(--neon-primary); }
     }
 
     .heartbeat-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 2px;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
+        display: flex; align-items: center; justify-content: center;
+        gap: 2px; height: 100%; width: 100%; overflow: hidden;
     }
 
     .heartbeat-bar {
-        width: 100%;
-        height: 100%;
-        background: var(--neon-primary);
-        transform-origin: bottom;
+        width: 100%; height: 100%; background: var(--neon-primary); transform-origin: bottom;
     }
 
     .is-playing .heartbeat-bar {
         animation: heartbeat-bar 0.5s infinite ease-in-out alternate;
     }
-
-    /* Variações de tempo para parecer aleatório */
+    
+    /* Variação nas barras */
     .is-playing .heartbeat-bar:nth-child(odd) { animation-duration: 0.4s; }
     .is-playing .heartbeat-bar:nth-child(even) { animation-duration: 0.6s; }
-    .is-playing .heartbeat-bar:nth-child(3n) { animation-duration: 0.3s; }
+
+    /* --- MENU LATERAL --- */
+    #side-menu {
+        transition: transform 0.3s ease-in-out;
+        transform: translateX(-100%);
+    }
+    #side-menu.open {
+        transform: translateX(0);
+    }
+    #menu-overlay {
+        transition: opacity 0.3s ease-in-out;
+        opacity: 0; pointer-events: none;
+    }
+    #menu-overlay.open {
+        opacity: 1; pointer-events: auto;
+    }
 
     /* --- MODO PÂNICO --- */
     @keyframes shake-screen {
         0% { transform: translate(1px, 1px) rotate(0deg); }
-        10% { transform: translate(-1px, -2px) rotate(-1deg); }
-        20% { transform: translate(-3px, 0px) rotate(1deg); }
-        30% { transform: translate(3px, 2px) rotate(0deg); }
-        40% { transform: translate(1px, -1px) rotate(1deg); }
         50% { transform: translate(-1px, 2px) rotate(-1deg); }
-        60% { transform: translate(-3px, 1px) rotate(0deg); }
-        70% { transform: translate(3px, 1px) rotate(-1deg); }
-        80% { transform: translate(-1px, -1px) rotate(1deg); }
-        90% { transform: translate(1px, 2px) rotate(0deg); }
         100% { transform: translate(1px, -2px) rotate(-1deg); }
     }
-
     .panic-active {
         animation: shake-screen 0.1s infinite !important;
         filter: invert(1) hue-rotate(180deg) contrast(200%);
@@ -122,9 +126,37 @@
 
 <body class="bg-background-dark font-display text-gray-200 h-screen flex flex-col">
 
+    <div id="menu-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm" onclick="toggleMenu()"></div>
+    <aside id="side-menu" class="fixed top-0 left-0 z-50 h-full w-64 bg-card-dark border-r border-white/10 shadow-[0_0_50px_rgba(157,0,255,0.2)] flex flex-col">
+        <div class="p-5 border-b border-white/10 flex justify-between items-center">
+            <h2 class="text-xl font-bold tracking-widest text-purple-500">MENU</h2>
+            <button onclick="toggleMenu()" class="text-gray-400 hover:text-white">
+                <span class="material-symbols-rounded">close</span>
+            </button>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 hover:text-purple-400 transition-colors flex items-center gap-3">
+                <span class="material-symbols-rounded">person</span> Perfil
+            </a>
+            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 hover:text-purple-400 transition-colors flex items-center gap-3">
+                <span class="material-symbols-rounded">equalizer</span> Equalizador
+            </a>
+            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 hover:text-purple-400 transition-colors flex items-center gap-3">
+                <span class="material-symbols-rounded">settings</span> Configurações
+            </a>
+            <div class="h-px bg-white/10 my-2"></div>
+            <a href="#" class="block p-3 rounded-lg hover:bg-red-900/20 hover:text-red-500 transition-colors flex items-center gap-3">
+                <span class="material-symbols-rounded">logout</span> Sair
+            </a>
+        </nav>
+        <div class="p-4 text-xs text-gray-600 text-center uppercase tracking-widest">
+            Darkwave System v2.0
+        </div>
+    </aside>
+
     <header class="sticky top-0 z-30 bg-black/90 backdrop-blur-md border-b border-white/10 shrink-0">
         <div class="flex items-center justify-between p-4">
-            <button class="btn-frenetic rounded-full p-2 text-white/80 hover:bg-white/10 hover:text-white transition-all">
+            <button onclick="toggleMenu()" class="btn-frenetic rounded-full p-2 text-white/80 hover:bg-white/10 hover:text-white transition-all">
                 <span class="material-symbols-rounded text-2xl">menu</span>
             </button>
             
@@ -144,22 +176,38 @@
         </nav>
     </header>
 
-    <main class="flex-1 overflow-y-auto pb-40 relative">
+    <main class="flex-1 overflow-y-auto pb-44 relative">
         
         <div id="view-tracks" class="p-3 space-y-3">
-            <button onclick="playAll()" class="btn-frenetic w-full py-4 rounded-xl bg-gradient-to-r from-purple-900 to-red-900 border border-white/10 shadow-lg flex items-center justify-center gap-2 group mb-4">
-                <span class="material-symbols-rounded text-3xl group-hover:scale-125 transition-transform">play_circle</span>
-                <span class="text-lg font-bold tracking-widest">TOCAR TUDO</span>
-            </button>
+            
+            <div class="grid grid-cols-4 gap-2 mb-4">
+                <button onclick="playAll()" class="btn-frenetic col-span-1 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg py-2 flex flex-col items-center justify-center gap-1 group">
+                    <span class="material-symbols-rounded text-2xl group-hover:text-white text-purple-300">playlist_play</span>
+                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-purple-200">Tocar Tudo</span>
+                </button>
+                
+                <button onclick="stopSong()" class="btn-frenetic bg-red-900/20 hover:bg-red-900/40 border border-red-500/30 rounded-lg py-2 flex flex-col items-center justify-center gap-1 group">
+                    <span class="material-symbols-rounded text-2xl group-hover:text-red-400 text-red-700">stop</span>
+                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-red-300">Parar</span>
+                </button>
+
+                <button onclick="prevSong()" class="btn-frenetic bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg py-2 flex flex-col items-center justify-center gap-1">
+                    <span class="material-symbols-rounded text-2xl text-gray-400">skip_previous</span>
+                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-gray-500">Ant.</span>
+                </button>
+
+                <button onclick="nextSong()" class="btn-frenetic bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg py-2 flex flex-col items-center justify-center gap-1">
+                    <span class="material-symbols-rounded text-2xl text-gray-400">skip_next</span>
+                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-gray-500">Próx.</span>
+                </button>
+            </div>
 
             <div id="list-tracks" class="flex flex-col gap-2"></div>
         </div>
 
         <div id="view-playlist" class="hidden p-3 space-y-3">
             <div id="list-playlist" class="flex flex-col gap-2">
-                <div class="text-center py-10 text-gray-600 uppercase tracking-widest text-xs">
-                    Sua setlist está vazia.<br>Adicione músicas na aba Faixas.
-                </div>
+                <div class="text-center py-10 text-gray-600 uppercase tracking-widest text-xs">Vazio</div>
             </div>
         </div>
 
@@ -169,24 +217,28 @@
 
     </main>
 
-    <footer id="player-footer" class="fixed bottom-0 w-full z-40 bg-black/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-5px_30px_rgba(0,0,0,1)]">
+    <footer id="player-footer" class="fixed bottom-0 w-full z-40 bg-black/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-5px_30px_rgba(0,0,0,1)] transition-transform duration-300">
         
         <div class="relative h-2 w-full bg-gray-900 overflow-hidden">
             <div class="heartbeat-container opacity-50">
+                <div class="heartbeat-bar w-full"></div>
+                <div class="heartbeat-bar w-full"></div>
+                <div class="heartbeat-bar w-full"></div>
                 <div class="heartbeat-bar w-full"></div>
             </div>
             <div id="progress-fill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 via-red-500 to-yellow-400 opacity-80" style="width: 0%"></div>
         </div>
 
-        <div class="flex items-center gap-3 p-3 pb-6"> <div class="relative h-16 w-16 shrink-0 rounded-md overflow-hidden bg-gray-800 shadow-lg border border-white/10">
+        <div class="flex items-center gap-3 p-3 pb-6">
+            <div class="relative h-16 w-16 shrink-0 rounded-md overflow-hidden bg-gray-800 shadow-lg border border-white/10 group">
                 <div id="player-art" class="absolute inset-0 bg-cover bg-center transition-opacity" style="background-image: url('');"></div>
                 <div id="yt-player" class="absolute inset-0 opacity-0 pointer-events-none"></div>
             </div>
 
             <div class="flex-1 min-w-0 overflow-hidden">
                 <div class="flex flex-col">
-                    <p id="track-title" class="truncate text-sm font-bold text-white leading-tight">Gallowdance</p>
-                    <p id="track-artist" class="truncate text-xs text-purple-400 font-medium">Lebanon Hanover</p>
+                    <p id="track-title" class="truncate text-sm font-bold text-white leading-tight">Pronto</p>
+                    <p id="track-artist" class="truncate text-xs text-purple-400 font-medium">Selecione uma faixa</p>
                 </div>
             </div>
 
@@ -209,7 +261,7 @@
     <div id="click-effect" class="pointer-events-none fixed inset-0 z-50 opacity-0 bg-red-500/20 mix-blend-overlay transition-opacity duration-100"></div>
 
 <script>
-    // --- BANCO DE DADOS ---
+    // --- DADOS ---
     const allSongs = [
         { id: "-HeCgOiirV4", artist: "Lebanon Hanover", title: "Gallowdance" },
         { id: "tBpQ1f77PDA", artist: "She Past Away", title: "Kasvetli Kutlama" },
@@ -245,12 +297,12 @@
 
     let myPlaylist = [];
     let player;
-    let currentContext = 'all'; // 'all' ou 'playlist'
+    let currentContext = 'all'; 
     let currentIndex = 0;
     let isPlaying = false;
     let autoPlay = false;
 
-    // --- SETUP INICIAL ---
+    // --- SETUP PLAYER ---
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
             height: '100%',
@@ -259,7 +311,10 @@
             playerVars: { 'playsinline': 1, 'controls': 0, 'rel': 0 },
             events: {
                 'onStateChange': onPlayerStateChange,
-                'onReady': () => updatePlayerUI(allSongs[0])
+                'onReady': () => {
+                     // Inicializa UI sem tocar
+                     updatePlayerUI(allSongs[0]);
+                }
             }
         });
     }
@@ -274,35 +329,49 @@
             isPlaying = false;
             document.getElementById('player-footer').classList.remove('is-playing');
             document.querySelector('#btn-play span').innerText = 'play_arrow';
+            
             if (event.data == YT.PlayerState.ENDED && autoPlay) {
                 nextSong();
             }
         }
     }
 
-    // --- CONTROLE DE MÚSICA ---
+    // --- LÓGICA DE CONTROLE ---
     function loadSong(index, context = 'all') {
         currentContext = context;
         let list = context === 'all' ? allSongs : myPlaylist;
-        
         if (list.length === 0) return;
         
-        // Garante loop seguro
+        // Loop
         if (index >= list.length) index = 0;
         if (index < 0) index = list.length - 1;
         
         currentIndex = index;
         const song = list[currentIndex];
 
-        player.loadVideoById(song.id);
+        if(player && player.loadVideoById) {
+            player.loadVideoById(song.id);
+        }
         updatePlayerUI(song);
-        flashScreen(); // Efeito visual de troca
+        flashScreen();
     }
 
     function togglePlay() {
         if (!player) return;
         if (isPlaying) player.pauseVideo();
         else player.playVideo();
+    }
+
+    function stopSong() {
+        if(!player) return;
+        player.pauseVideo();
+        player.seekTo(0);
+        isPlaying = false;
+        autoPlay = false;
+        document.getElementById('progress-fill').style.width = '0%';
+        document.querySelector('#btn-play span').innerText = 'play_arrow';
+        document.getElementById('player-footer').classList.remove('is-playing');
+        alert("Reprodução Parada");
     }
 
     function nextSong() {
@@ -316,46 +385,46 @@
     function playAll() {
         autoPlay = true;
         loadSong(0, 'all');
-        alert("AUTO-DJ ATIVADO: Tocando todas as faixas em sequência.");
+        alert("Modo Playlist Contínua Ativado");
     }
 
     function updatePlayerUI(song) {
         document.getElementById('track-title').innerText = song.title;
         document.getElementById('track-artist').innerText = song.artist;
         document.getElementById('player-art').style.backgroundImage = `url('https://img.youtube.com/vi/${song.id}/mqdefault.jpg')`;
-        
-        // Atualiza a barra de "batida" para ser mais caótica
-        const bars = document.querySelectorAll('.heartbeat-bar');
-        bars.forEach(bar => {
-            bar.style.backgroundColor = getRandomColor();
-        });
     }
 
-    // --- GESTÃO DE PLAYLIST E UI ---
+    // --- MENU E UI ---
+    function toggleMenu() {
+        const menu = document.getElementById('side-menu');
+        const overlay = document.getElementById('menu-overlay');
+        menu.classList.toggle('open');
+        overlay.classList.toggle('open');
+    }
+
     function renderLists() {
-        // Lista Principal
+        // Lista Faixas
         const listTracks = document.getElementById('list-tracks');
         listTracks.innerHTML = allSongs.map((song, i) => createTrackItem(song, i, 'all')).join('');
 
-        // Lista Pessoal
+        // Lista Playlist
         const listPlaylist = document.getElementById('list-playlist');
         if (myPlaylist.length > 0) {
             listPlaylist.innerHTML = myPlaylist.map((song, i) => createTrackItem(song, i, 'playlist')).join('');
         } else {
-            listPlaylist.innerHTML = `<div class="text-center py-10 text-gray-600 uppercase text-xs tracking-widest">Vazio</div>`;
+            listPlaylist.innerHTML = `<div class="text-center py-10 text-gray-600 uppercase text-xs tracking-widest">Sua lista está vazia</div>`;
         }
 
-        // Grade de Artistas
+        // Artistas
         const gridArtists = document.getElementById('grid-artists');
         const uniqueArtists = [...new Set(allSongs.map(s => s.artist))];
         gridArtists.innerHTML = uniqueArtists.map(artist => {
-            // Acha uma música desse artista para pegar a foto
             const song = allSongs.find(s => s.artist === artist);
             return `
-                <div class="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+                <div class="relative aspect-square rounded-lg overflow-hidden border border-white/10 group cursor-pointer hover:border-purple-500 transition-colors">
                     <img src="https://img.youtube.com/vi/${song.id}/hqdefault.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
                     <div class="absolute inset-0 bg-black/60 flex items-end p-2">
-                        <span class="text-xs font-bold text-white truncate w-full">${artist}</span>
+                        <span class="text-xs font-bold text-white truncate w-full shadow-black drop-shadow-md">${artist}</span>
                     </div>
                 </div>
             `;
@@ -369,7 +438,7 @@
             : `<button onclick="addToPlaylist(${index}, event)" class="p-2 text-gray-500 hover:text-green-400"><span class="material-symbols-rounded">add_circle</span></button>`;
 
         return `
-            <div onclick="loadSong(${index}, '${context}')" class="btn-frenetic flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-transparent hover:border-white/20 cursor-pointer transition-all">
+            <div onclick="loadSong(${index}, '${context}')" class="btn-frenetic flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-transparent hover:border-purple-500/30 cursor-pointer transition-all active:bg-purple-900/20">
                 <img src="https://img.youtube.com/vi/${song.id}/default.jpg" class="h-10 w-10 rounded object-cover opacity-70">
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-gray-200 truncate">${song.title}</p>
@@ -386,7 +455,6 @@
         if (!myPlaylist.some(s => s.id === song.id)) {
             myPlaylist.push(song);
             renderLists();
-            alert(`"${song.title}" adicionada à sua Playlist!`);
         }
     }
 
@@ -396,7 +464,6 @@
         renderLists();
     }
 
-    // --- NAVEGAÇÃO ---
     function switchTab(tab) {
         ['tracks', 'playlist', 'artists'].forEach(t => {
             document.getElementById(`tab-${t}`).classList.remove('border-purple-600', 'text-purple-400', 'bg-white/5');
@@ -408,12 +475,6 @@
         activeBtn.classList.remove('border-transparent', 'text-gray-500');
         activeBtn.classList.add('border-purple-600', 'text-purple-400', 'bg-white/5');
         document.getElementById(`view-${tab}`).classList.remove('hidden');
-    }
-
-    // --- EFEITOS VISUAIS E UTILITÁRIOS ---
-    function getRandomColor() {
-        const colors = ['#9d00ff', '#ff004c', '#ffff00', '#00eaff', '#ff0000'];
-        return colors[Math.floor(Math.random() * colors.length)];
     }
 
     function startProgressLoop() {
@@ -429,7 +490,7 @@
 
     function flashScreen() {
         const overlay = document.getElementById('click-effect');
-        overlay.style.backgroundColor = getRandomColor();
+        overlay.style.backgroundColor = ['#9d00ff', '#ff004c', '#ffff00'][Math.floor(Math.random()*3)];
         overlay.style.opacity = '0.3';
         setTimeout(() => overlay.style.opacity = '0', 150);
     }
@@ -439,7 +500,6 @@
         if (isPlaying) togglePlay();
     }
 
-    // Inicialização
     renderLists();
 </script>
 </body>
