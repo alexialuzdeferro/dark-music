@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Darkwave Player - Compact</title>
+<title>Darkwave System - Full OS</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet"/>
@@ -15,15 +15,12 @@
         extend: {
           colors: {
             "background-dark": "#050005",
-            "card-dark": "#120012",
+            "card-dark": "#0a000a",
           },
           fontFamily: {
             "display": ["Spline Sans", "sans-serif"]
           },
-          animation: {
-            'slide-in': 'slideIn 0.3s ease-out forwards',
-            'fade-in': 'fadeIn 0.3s ease-out forwards',
-          }
+          zIndex: { '60': '60', '70': '70', '80': '80' }
         },
       },
     }
@@ -34,231 +31,253 @@
         --neon-primary: #9d00ff;
         --neon-secondary: #ff004c;
     }
+    
+    body.theme-red { --neon-primary: #ff0000; --neon-secondary: #550000; }
+    body.theme-green { --neon-primary: #00ff00; --neon-secondary: #004400; }
+    body.theme-blue { --neon-primary: #00ccff; --neon-secondary: #0000ff; }
+    body.font-bold-mode * { font-weight: 700 !important; }
 
     body {
         background-color: #000;
-        overflow-x: hidden; 
-        touch-action: pan-y;
-        user-select: none;
+        overflow-x: hidden; touch-action: pan-y; user-select: none;
         -webkit-tap-highlight-color: transparent;
     }
 
+    /* --- SLIDERS DO EQUALIZADOR --- */
+    input[type=range] {
+        -webkit-appearance: none; width: 100%; background: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+        background: var(--neon-primary); margin-top: -6px; box-shadow: 0 0 10px var(--neon-primary);
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+        width: 100%; height: 4px; background: #333; border-radius: 2px;
+    }
+
     /* --- ANIMAÇÕES --- */
-    @keyframes slideIn {
-        from { transform: translateX(-100%); }
-        to { transform: translateX(0); }
-    }
+    #side-menu { transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
+    #side-menu.open { transform: translateX(0); box-shadow: 5px 0 30px rgba(0,0,0,0.8); }
     
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    /* Shutdown Effect */
+    @keyframes turn-off {
+        0% { transform: scale(1, 1.3) translate3d(0, 0, 0); filter: brightness(1); opacity: 1; }
+        60% { transform: scale(1, 0.001) translate3d(0, 0, 0); filter: brightness(10); }
+        100% { animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06); transform: scale(0, 0.001) translate3d(0, 0, 0); opacity: 0; }
     }
+    .shutdown-anim { animation: turn-off 0.55s cubic-bezier(0.23, 1, 0.32, 1); animation-fill-mode: forwards; }
 
-    @keyframes rainbow-border {
-        0% { border-color: #9d00ff; box-shadow: 0 0 10px #9d00ff; }
-        50% { border-color: #ff004c; box-shadow: 0 0 10px #ff004c; }
-        100% { border-color: #9d00ff; box-shadow: 0 0 10px #9d00ff; }
+    /* Visualizer Bars */
+    @keyframes equalizer-bounce {
+        0% { height: 10%; } 50% { height: 100%; } 100% { height: 10%; }
     }
+    .eq-bar { width: 8px; background: var(--neon-primary); animation: equalizer-bounce 0.5s infinite; }
+    .eq-bar:nth-child(1) { animation-duration: 0.4s; }
+    .eq-bar:nth-child(2) { animation-duration: 0.6s; }
+    .eq-bar:nth-child(3) { animation-duration: 0.3s; }
+    .eq-bar:nth-child(4) { animation-duration: 0.5s; }
+    .eq-bar:nth-child(5) { animation-duration: 0.7s; }
 
-    .btn-frenetic:active {
-        animation: rainbow-border 0.2s infinite;
-        transform: scale(0.95);
+    /* Modals */
+    .modal-overlay {
+        opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        backdrop-filter: blur(5px);
     }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-content {
+        transform: scale(0.9); transition: transform 0.3s;
+    }
+    .modal-overlay.active .modal-content { transform: scale(1); }
 
-    /* --- BARRA CARDÍACA --- */
-    @keyframes heartbeat-bar {
-        0% { height: 100%; opacity: 0.8; background: var(--neon-primary); }
-        50% { height: 40%; opacity: 1; background: #ff0000; box-shadow: 0 0 15px #ff0000; }
-        100% { height: 100%; opacity: 0.8; background: var(--neon-primary); }
-    }
-
-    .heartbeat-container {
-        display: flex; align-items: center; justify-content: center;
-        gap: 2px; height: 100%; width: 100%; overflow: hidden;
-    }
-
-    .heartbeat-bar {
-        width: 100%; height: 100%; background: var(--neon-primary); transform-origin: bottom;
-    }
-
-    .is-playing .heartbeat-bar {
-        animation: heartbeat-bar 0.5s infinite ease-in-out alternate;
-    }
-    
-    /* Variação nas barras */
-    .is-playing .heartbeat-bar:nth-child(odd) { animation-duration: 0.4s; }
-    .is-playing .heartbeat-bar:nth-child(even) { animation-duration: 0.6s; }
-
-    /* --- MENU LATERAL --- */
-    #side-menu {
-        transition: transform 0.3s ease-in-out;
-        transform: translateX(-100%);
-    }
-    #side-menu.open {
-        transform: translateX(0);
-    }
-    #menu-overlay {
-        transition: opacity 0.3s ease-in-out;
-        opacity: 0; pointer-events: none;
-    }
-    #menu-overlay.open {
-        opacity: 1; pointer-events: auto;
-    }
-
-    /* --- MODO PÂNICO --- */
-    @keyframes shake-screen {
-        0% { transform: translate(1px, 1px) rotate(0deg); }
-        50% { transform: translate(-1px, 2px) rotate(-1deg); }
-        100% { transform: translate(1px, -2px) rotate(-1deg); }
-    }
-    .panic-active {
-        animation: shake-screen 0.1s infinite !important;
-        filter: invert(1) hue-rotate(180deg) contrast(200%);
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #111; }
-    ::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+    /* Panic Mode */
+    @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 100% { transform: translate(-1px, -2px) rotate(-1deg); } }
+    .panic-active { animation: shake 0.1s infinite; filter: invert(1) grayscale(100%); border: 2px solid red; }
 </style>
 <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 
-<body class="bg-background-dark font-display text-gray-200 h-screen flex flex-col">
+<body class="bg-background-dark font-display text-gray-200 h-screen flex flex-col overflow-hidden">
 
-    <div id="menu-overlay" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm" onclick="toggleMenu()"></div>
-    <aside id="side-menu" class="fixed top-0 left-0 z-50 h-full w-64 bg-card-dark border-r border-white/10 shadow-[0_0_50px_rgba(157,0,255,0.2)] flex flex-col">
-        <div class="p-5 border-b border-white/10 flex justify-between items-center">
-            <h2 class="text-xl font-bold tracking-widest text-purple-500">MENU</h2>
-            <button onclick="toggleMenu()" class="text-gray-400 hover:text-white">
-                <span class="material-symbols-rounded">close</span>
+    <div id="menu-overlay" class="fixed inset-0 z-60 bg-black/80 hidden" onclick="toggleMenu()"></div>
+    
+    <aside id="side-menu" class="fixed top-0 left-0 z-70 h-full w-80 bg-card-dark border-r border-white/10 flex flex-col">
+        <div class="p-6 border-b border-white/10 flex flex-col items-center bg-black/50 gap-3">
+            <div id="profile-pic-display" class="w-20 h-20 rounded-full border-2 border-purple-500 bg-cover bg-center shadow-[0_0_15px_#9d00ff]" style="background-image: url('https://api.dicebear.com/7.x/bottts/svg?seed=Goth');"></div>
+            <h2 class="text-xl font-bold tracking-[0.2em] text-white uppercase">User_01</h2>
+        </div>
+        
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="openModal('modal-profile')" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 hover:text-purple-400 transition-all border border-transparent hover:border-purple-500/30">
+                <span class="material-symbols-rounded text-2xl">face</span> 
+                <span class="font-medium tracking-wide">Perfil / Avatar</span>
             </button>
-        </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 hover:text-purple-400 transition-colors flex items-center gap-3">
-                <span class="material-symbols-rounded">person</span> Perfil
-            </a>
-            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 hover:text-purple-400 transition-colors flex items-center gap-3">
-                <span class="material-symbols-rounded">equalizer</span> Equalizador
-            </a>
-            <a href="#" class="block p-3 rounded-lg hover:bg-white/5 hover:text-purple-400 transition-colors flex items-center gap-3">
-                <span class="material-symbols-rounded">settings</span> Configurações
-            </a>
-            <div class="h-px bg-white/10 my-2"></div>
-            <a href="#" class="block p-3 rounded-lg hover:bg-red-900/20 hover:text-red-500 transition-colors flex items-center gap-3">
-                <span class="material-symbols-rounded">logout</span> Sair
-            </a>
+            <button onclick="openModal('modal-eq')" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 hover:text-purple-400 transition-all border border-transparent hover:border-purple-500/30">
+                <span class="material-symbols-rounded text-2xl">equalizer</span> 
+                <span class="font-medium tracking-wide">Equalizador</span>
+            </button>
+            <button onclick="openModal('modal-settings')" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 hover:text-purple-400 transition-all border border-transparent hover:border-purple-500/30">
+                <span class="material-symbols-rounded text-2xl">settings</span> 
+                <span class="font-medium tracking-wide">Configurações</span>
+            </button>
+            
+            <div class="h-px bg-white/10 my-4"></div>
+            
+            <button onclick="systemLogout()" class="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-red-900/20 hover:text-red-500 transition-all border border-transparent hover:border-red-900/50">
+                <span class="material-symbols-rounded text-2xl">power_settings_new</span> 
+                <span class="font-medium tracking-wide">Sair / Desligar</span>
+            </button>
         </nav>
-        <div class="p-4 text-xs text-gray-600 text-center uppercase tracking-widest">
-            Darkwave System v2.0
-        </div>
     </aside>
 
-    <header class="sticky top-0 z-30 bg-black/90 backdrop-blur-md border-b border-white/10 shrink-0">
+    <div id="modal-profile" class="modal-overlay fixed inset-0 z-80 flex items-center justify-center bg-black/90">
+        <div class="modal-content bg-card-dark w-11/12 max-w-md p-6 rounded-2xl border border-white/10 shadow-2xl">
+            <h3 class="text-xl font-bold text-center mb-4 text-purple-400">SELECIONE SEU AVATAR</h3>
+            <div class="grid grid-cols-4 gap-4 mb-6">
+                <div onclick="setAvatar('💀')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">💀</div>
+                <div onclick="setAvatar('🧛')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">🧛</div>
+                <div onclick="setAvatar('🦇')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">🦇</div>
+                <div onclick="setAvatar('🕷️')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">🕷️</div>
+                <div onclick="setAvatar('🌑')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">🌑</div>
+                <div onclick="setAvatar('👁️')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">👁️</div>
+                <div onclick="setAvatar('🥀')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">🥀</div>
+                <div onclick="setAvatar('👽')" class="aspect-square rounded-lg bg-white/5 flex items-center justify-center text-3xl cursor-pointer hover:bg-purple-600 transition">👽</div>
+            </div>
+            <button onclick="closeModal('modal-profile')" class="w-full py-3 bg-white/10 rounded-xl font-bold hover:bg-white/20">FECHAR</button>
+        </div>
+    </div>
+
+    <div id="modal-eq" class="modal-overlay fixed inset-0 z-80 flex items-center justify-center bg-black/90">
+        <div class="modal-content bg-card-dark w-11/12 max-w-md p-6 rounded-2xl border border-purple-500/30 shadow-[0_0_50px_rgba(157,0,255,0.2)]">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-purple-400 tracking-widest">EQUALIZADOR</h3>
+                <div class="flex gap-1 h-6 items-end">
+                    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                </div>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <div class="flex items-center gap-4">
+                    <span class="text-xs w-8 text-gray-500">BASS</span>
+                    <input type="range" min="0" max="100" value="80">
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs w-8 text-gray-500">MID</span>
+                    <input type="range" min="0" max="100" value="50">
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs w-8 text-gray-500">TREB</span>
+                    <input type="range" min="0" max="100" value="60">
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button class="bg-white/5 py-2 text-xs rounded hover:bg-purple-600 hover:text-white transition">BASS BOOST</button>
+                <button class="bg-white/5 py-2 text-xs rounded hover:bg-purple-600 hover:text-white transition">VOCAL</button>
+                <button class="bg-white/5 py-2 text-xs rounded hover:bg-purple-600 hover:text-white transition">DARKWAVE</button>
+            </div>
+            <button onclick="closeModal('modal-eq')" class="w-full py-3 bg-purple-600 rounded-xl font-bold text-white shadow-lg shadow-purple-900/50">APLICAR</button>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="modal-overlay fixed inset-0 z-80 flex items-center justify-center bg-black/90">
+        <div class="modal-content bg-card-dark w-11/12 max-w-md p-6 rounded-2xl border border-white/10">
+            <h3 class="text-xl font-bold text-center mb-6">CONFIGURAÇÕES</h3>
+            
+            <div class="space-y-6">
+                <div>
+                    <p class="text-xs text-gray-500 mb-2 uppercase tracking-widest">Tema / Cor</p>
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="setTheme('purple')" class="w-10 h-10 rounded-full bg-purple-600 border-2 border-white/20 hover:scale-110 transition"></button>
+                        <button onclick="setTheme('red')" class="w-10 h-10 rounded-full bg-red-600 border-2 border-white/20 hover:scale-110 transition"></button>
+                        <button onclick="setTheme('green')" class="w-10 h-10 rounded-full bg-green-600 border-2 border-white/20 hover:scale-110 transition"></button>
+                        <button onclick="setTheme('blue')" class="w-10 h-10 rounded-full bg-blue-600 border-2 border-white/20 hover:scale-110 transition"></button>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-500 mb-2 uppercase tracking-widest">Idioma</p>
+                    <div class="flex bg-white/5 rounded-lg p-1">
+                        <button onclick="setLang('pt')" class="flex-1 py-2 rounded text-sm bg-white/10 text-white font-bold">Português</button>
+                        <button onclick="setLang('en')" class="flex-1 py-2 rounded text-sm text-gray-500 hover:text-white">English</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between bg-white/5 p-3 rounded-lg">
+                    <span class="text-sm font-bold">Texto em Negrito</span>
+                    <button onclick="toggleBold()" class="w-12 h-6 bg-gray-600 rounded-full relative transition-colors duration-300" id="bold-toggle">
+                        <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300" id="bold-knob"></div>
+                    </button>
+                </div>
+            </div>
+            
+            <button onclick="closeModal('modal-settings')" class="w-full py-3 mt-8 bg-white/10 rounded-xl font-bold hover:bg-white/20">SALVAR</button>
+        </div>
+    </div>
+
+    <div id="shutdown-screen" class="fixed inset-0 z-[100] bg-black hidden flex items-center justify-center">
+        <div class="text-center">
+            <span class="material-symbols-rounded text-6xl text-gray-500 mb-4 animate-pulse">power_off</span>
+            <p class="text-gray-500 tracking-[0.5em] text-xs">SYSTEM OFFLINE</p>
+        </div>
+    </div>
+
+    <header class="sticky top-0 z-30 bg-black/90 backdrop-blur-xl border-b border-white/10 shrink-0">
         <div class="flex items-center justify-between p-4">
-            <button onclick="toggleMenu()" class="btn-frenetic rounded-full p-2 text-white/80 hover:bg-white/10 hover:text-white transition-all">
-                <span class="material-symbols-rounded text-2xl">menu</span>
+            <button onclick="toggleMenu()" class="p-2 text-white hover:bg-white/10 rounded-full transition-all">
+                <span class="material-symbols-rounded text-3xl">menu</span>
             </button>
-            
-            <h1 class="text-xl font-bold tracking-[0.3em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-red-500 to-yellow-500 animate-pulse">
-                Darkwave
-            </h1>
-            
-            <button onclick="triggerPanic()" class="btn-frenetic group relative flex items-center justify-center p-2 rounded-full border border-red-900 bg-red-900/20 shadow-[0_0_15px_rgba(255,0,0,0.4)]">
-                <span class="material-symbols-rounded text-red-500 animate-pulse">warning</span>
+            <h1 class="text-xl font-bold tracking-[0.3em] uppercase text-transparent bg-clip-text bg-gradient-to-r from-purple-500 via-white to-purple-500 animate-pulse">DARKWAVE</h1>
+            <button onclick="triggerPanic()" class="p-2 border border-red-900 bg-red-900/20 rounded-full animate-pulse">
+                <span class="material-symbols-rounded text-red-500">warning</span>
             </button>
         </div>
-
-        <nav class="flex text-sm font-medium tracking-wide">
-            <button onclick="switchTab('tracks')" id="tab-tracks" class="flex-1 py-3 text-center border-b-2 border-purple-600 text-purple-400 bg-white/5">FAIXAS</button>
-            <button onclick="switchTab('playlist')" id="tab-playlist" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-300">MY LIST</button>
-            <button onclick="switchTab('artists')" id="tab-artists" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-500 hover:text-gray-300">ARTISTAS</button>
+        <nav class="flex text-xs font-bold tracking-widest uppercase border-b border-white/5">
+            <button onclick="switchTab('tracks')" id="tab-tracks" class="flex-1 py-4 border-b-2 border-purple-600 text-purple-400 bg-white/5">Faixas</button>
+            <button onclick="switchTab('playlist')" id="tab-playlist" class="flex-1 py-4 border-b-2 border-transparent text-gray-500">Playlist</button>
+            <button onclick="switchTab('artists')" id="tab-artists" class="flex-1 py-4 border-b-2 border-transparent text-gray-500">Artistas</button>
         </nav>
     </header>
 
-    <main class="flex-1 overflow-y-auto pb-44 relative">
-        
-        <div id="view-tracks" class="p-3 space-y-3">
-            
-            <div class="grid grid-cols-4 gap-2 mb-4">
-                <button onclick="playAll()" class="btn-frenetic col-span-1 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/30 rounded-lg py-2 flex flex-col items-center justify-center gap-1 group">
-                    <span class="material-symbols-rounded text-2xl group-hover:text-white text-purple-300">playlist_play</span>
-                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-purple-200">Tocar Tudo</span>
-                </button>
-                
-                <button onclick="stopSong()" class="btn-frenetic bg-red-900/20 hover:bg-red-900/40 border border-red-500/30 rounded-lg py-2 flex flex-col items-center justify-center gap-1 group">
-                    <span class="material-symbols-rounded text-2xl group-hover:text-red-400 text-red-700">stop</span>
-                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-red-300">Parar</span>
-                </button>
-
-                <button onclick="prevSong()" class="btn-frenetic bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg py-2 flex flex-col items-center justify-center gap-1">
-                    <span class="material-symbols-rounded text-2xl text-gray-400">skip_previous</span>
-                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-gray-500">Ant.</span>
-                </button>
-
-                <button onclick="nextSong()" class="btn-frenetic bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg py-2 flex flex-col items-center justify-center gap-1">
-                    <span class="material-symbols-rounded text-2xl text-gray-400">skip_next</span>
-                    <span class="text-[0.6rem] font-bold uppercase tracking-wider text-gray-500">Próx.</span>
-                </button>
+    <main class="flex-1 overflow-y-auto pb-48 relative">
+        <div id="view-tracks" class="p-3 space-y-4">
+            <div class="grid grid-cols-4 gap-2 bg-black/40 p-2 rounded-2xl border border-white/5 sticky top-2 z-20 backdrop-blur-md">
+                <button onclick="playAll()" class="col-span-1 bg-purple-900/20 text-purple-300 rounded-xl py-3 flex flex-col items-center"><span class="material-symbols-rounded">playlist_play</span><span class="text-[0.6rem] font-bold mt-1">ALL</span></button>
+                <button onclick="stopSong()" class="col-span-1 bg-red-900/20 text-red-300 rounded-xl py-3 flex flex-col items-center"><span class="material-symbols-rounded">stop_circle</span><span class="text-[0.6rem] font-bold mt-1">STOP</span></button>
+                <button onclick="prevSong()" class="bg-white/5 text-gray-400 rounded-xl py-3 flex flex-col items-center"><span class="material-symbols-rounded">skip_previous</span></button>
+                <button onclick="nextSong()" class="bg-white/5 text-gray-400 rounded-xl py-3 flex flex-col items-center"><span class="material-symbols-rounded">skip_next</span></button>
             </div>
-
-            <div id="list-tracks" class="flex flex-col gap-2"></div>
+            <div id="list-tracks" class="flex flex-col gap-2 pb-4"></div>
         </div>
 
         <div id="view-playlist" class="hidden p-3 space-y-3">
-            <div id="list-playlist" class="flex flex-col gap-2">
-                <div class="text-center py-10 text-gray-600 uppercase tracking-widest text-xs">Vazio</div>
+            <button onclick="playMyPlaylist()" class="w-full py-4 bg-gradient-to-r from-purple-900 to-black border border-purple-500/30 rounded-xl font-bold tracking-widest flex items-center justify-center gap-2">
+                <span class="material-symbols-rounded">play_circle</span> TOCAR MINHA LISTA
+            </button>
+            <div id="list-playlist" class="flex flex-col gap-2 pb-4">
+                <div class="text-center py-10 text-gray-600 uppercase text-xs tracking-widest">Lista Vazia</div>
             </div>
         </div>
 
-        <div id="view-artists" class="hidden p-3">
+        <div id="view-artists" class="hidden p-3 pb-4">
             <div id="grid-artists" class="grid grid-cols-2 gap-3"></div>
         </div>
-
     </main>
 
-    <footer id="player-footer" class="fixed bottom-0 w-full z-40 bg-black/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-5px_30px_rgba(0,0,0,1)] transition-transform duration-300">
-        
-        <div class="relative h-2 w-full bg-gray-900 overflow-hidden">
-            <div class="heartbeat-container opacity-50">
-                <div class="heartbeat-bar w-full"></div>
-                <div class="heartbeat-bar w-full"></div>
-                <div class="heartbeat-bar w-full"></div>
-                <div class="heartbeat-bar w-full"></div>
-            </div>
-            <div id="progress-fill" class="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 via-red-500 to-yellow-400 opacity-80" style="width: 0%"></div>
-        </div>
-
-        <div class="flex items-center gap-3 p-3 pb-6">
-            <div class="relative h-16 w-16 shrink-0 rounded-md overflow-hidden bg-gray-800 shadow-lg border border-white/10 group">
-                <div id="player-art" class="absolute inset-0 bg-cover bg-center transition-opacity" style="background-image: url('');"></div>
+    <footer id="player-footer" class="fixed bottom-0 w-full z-50 bg-[#050005]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-5px_30px_#000]">
+        <div class="h-1.5 w-full bg-gray-900 overflow-hidden"><div id="progress-fill" class="h-full bg-gradient-to-r from-purple-500 via-red-500 to-yellow-400" style="width: 0%"></div></div>
+        <div class="flex items-center gap-3 p-3">
+            <div class="relative h-14 w-14 shrink-0 rounded-lg overflow-hidden bg-gray-800 border border-white/10">
+                <div id="player-art" class="absolute inset-0 bg-cover bg-center" style="background-image: url('');"></div>
                 <div id="yt-player" class="absolute inset-0 opacity-0 pointer-events-none"></div>
             </div>
-
-            <div class="flex-1 min-w-0 overflow-hidden">
-                <div class="flex flex-col">
-                    <p id="track-title" class="truncate text-sm font-bold text-white leading-tight">Pronto</p>
-                    <p id="track-artist" class="truncate text-xs text-purple-400 font-medium">Selecione uma faixa</p>
-                </div>
+            <div class="flex-1 min-w-0 flex flex-col justify-center">
+                <p id="track-title" class="truncate text-sm font-bold text-white">Darkwave OS</p>
+                <p id="track-artist" class="truncate text-xs text-purple-400 font-medium">Aguardando...</p>
             </div>
-
-            <div class="flex items-center gap-1">
-                <button onclick="prevSong()" class="btn-frenetic p-2 text-gray-400 hover:text-white rounded-full">
-                    <span class="material-symbols-rounded text-2xl">skip_previous</span>
-                </button>
-                
-                <button onclick="togglePlay()" id="btn-play" class="btn-frenetic flex h-12 w-12 items-center justify-center rounded-full bg-white text-black hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                    <span class="material-symbols-rounded text-3xl">play_arrow</span>
-                </button>
-                
-                <button onclick="nextSong()" class="btn-frenetic p-2 text-gray-400 hover:text-white rounded-full">
-                    <span class="material-symbols-rounded text-2xl">skip_next</span>
-                </button>
-            </div>
+            <button onclick="togglePlay()" id="btn-play" class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black hover:scale-105 transition shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                <span class="material-symbols-rounded text-3xl">play_arrow</span>
+            </button>
         </div>
     </footer>
-
-    <div id="click-effect" class="pointer-events-none fixed inset-0 z-50 opacity-0 bg-red-500/20 mix-blend-overlay transition-opacity duration-100"></div>
 
 <script>
     // --- DADOS ---
@@ -297,24 +316,19 @@
 
     let myPlaylist = [];
     let player;
-    let currentContext = 'all'; 
+    let currentContext = 'all'; // 'all' | 'playlist' | 'artist'
     let currentIndex = 0;
     let isPlaying = false;
-    let autoPlay = false;
+    let activeList = allSongs; // A lista que está tocando agora
 
-    // --- SETUP PLAYER ---
+    // --- YOUTUBE API ---
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('yt-player', {
-            height: '100%',
-            width: '100%',
-            videoId: allSongs[0].id,
+            height: '100%', width: '100%', videoId: allSongs[0].id,
             playerVars: { 'playsinline': 1, 'controls': 0, 'rel': 0 },
             events: {
                 'onStateChange': onPlayerStateChange,
-                'onReady': () => {
-                     // Inicializa UI sem tocar
-                     updatePlayerUI(allSongs[0]);
-                }
+                'onReady': () => updatePlayerUI(allSongs[0])
             }
         });
     }
@@ -322,70 +336,66 @@
     function onPlayerStateChange(event) {
         if (event.data == YT.PlayerState.PLAYING) {
             isPlaying = true;
-            document.getElementById('player-footer').classList.add('is-playing');
             document.querySelector('#btn-play span').innerText = 'pause';
             startProgressLoop();
         } else {
             isPlaying = false;
-            document.getElementById('player-footer').classList.remove('is-playing');
             document.querySelector('#btn-play span').innerText = 'play_arrow';
-            
-            if (event.data == YT.PlayerState.ENDED && autoPlay) {
-                nextSong();
-            }
+            if (event.data == YT.PlayerState.ENDED) nextSong();
         }
     }
 
-    // --- LÓGICA DE CONTROLE ---
-    function loadSong(index, context = 'all') {
+    // --- LÓGICA DE ÁUDIO ---
+    function loadSong(index, context = 'all', specificList = null) {
         currentContext = context;
-        let list = context === 'all' ? allSongs : myPlaylist;
-        if (list.length === 0) return;
-        
-        // Loop
-        if (index >= list.length) index = 0;
-        if (index < 0) index = list.length - 1;
+        if(specificList) activeList = specificList;
+        else if(context === 'all') activeList = allSongs;
+        else if(context === 'playlist') activeList = myPlaylist;
+
+        if (activeList.length === 0) return;
+        if (index >= activeList.length) index = 0;
+        if (index < 0) index = activeList.length - 1;
         
         currentIndex = index;
-        const song = list[currentIndex];
+        const song = activeList[currentIndex];
 
-        if(player && player.loadVideoById) {
-            player.loadVideoById(song.id);
-        }
+        player.loadVideoById(song.id);
         updatePlayerUI(song);
-        flashScreen();
     }
 
-    function togglePlay() {
-        if (!player) return;
-        if (isPlaying) player.pauseVideo();
-        else player.playVideo();
+    function togglePlay() { isPlaying ? player.pauseVideo() : player.playVideo(); }
+    function stopSong() { player.stopVideo(); isPlaying = false; document.getElementById('progress-fill').style.width = '0%'; document.querySelector('#btn-play span').innerText = 'play_arrow'; }
+    function nextSong() { loadSong(currentIndex + 1, currentContext); }
+    function prevSong() { loadSong(currentIndex - 1, currentContext); }
+    function playAll() { loadSong(0, 'all'); alert('Reproduzindo Todas as Faixas'); }
+    
+    function playMyPlaylist() {
+        if(myPlaylist.length === 0) return alert('Playlist vazia!');
+        loadSong(0, 'playlist');
+        alert('Reproduzindo Sua Playlist');
     }
 
-    function stopSong() {
-        if(!player) return;
-        player.pauseVideo();
-        player.seekTo(0);
-        isPlaying = false;
-        autoPlay = false;
-        document.getElementById('progress-fill').style.width = '0%';
-        document.querySelector('#btn-play span').innerText = 'play_arrow';
-        document.getElementById('player-footer').classList.remove('is-playing');
-        alert("Reprodução Parada");
-    }
-
-    function nextSong() {
-        loadSong(currentIndex + 1, currentContext);
-    }
-
-    function prevSong() {
-        loadSong(currentIndex - 1, currentContext);
-    }
-
-    function playAll() {
-        autoPlay = true;
-        loadSong(0, 'all');
-        alert("Modo Playlist Contínua Ativado");
+    function playArtist(artistName) {
+        // Filtra músicas do artista
+        const artistSongs = allSongs.filter(s => s.artist === artistName);
+        if(artistSongs.length > 0) {
+            // Muda para aba faixas para ver a lista tocando (opcional, ou manter na aba artista)
+            // Vamos forçar a renderização temporária dessa lista na aba faixas? 
+            // Melhor: Tocar e avisar.
+            activeList = artistSongs;
+            currentContext = 'artist';
+            currentIndex = 0;
+            
+            // Toca a primeira
+            loadSong(0, 'artist', artistSongs);
+            
+            // Leva o usuário para a aba de faixas e mostra SÓ as do artista ou todas? 
+            // O usuário pediu "Vai para as faixas". Vamos filtrar visualmente a lista de faixas também.
+            renderFilteredTracks(artistSongs);
+            switchTab('tracks');
+            
+            alert(`Tocando coleção de: ${artistName}`);
+        }
     }
 
     function updatePlayerUI(song) {
@@ -394,37 +404,46 @@
         document.getElementById('player-art').style.backgroundImage = `url('https://img.youtube.com/vi/${song.id}/mqdefault.jpg')`;
     }
 
-    // --- MENU E UI ---
-    function toggleMenu() {
-        const menu = document.getElementById('side-menu');
-        const overlay = document.getElementById('menu-overlay');
-        menu.classList.toggle('open');
-        overlay.classList.toggle('open');
+    function startProgressLoop() {
+        if (!player || !isPlaying) return;
+        const d = player.getDuration();
+        const c = player.getCurrentTime();
+        if (d > 0) document.getElementById('progress-fill').style.width = (c / d) * 100 + '%';
+        requestAnimationFrame(startProgressLoop);
+    }
+
+    // --- UI & RENDERIZAÇÃO ---
+    function renderFilteredTracks(list) {
+        const listTracks = document.getElementById('list-tracks');
+        listTracks.innerHTML = list.map((song, i) => createTrackItem(song, i, 'artist')).join('');
+        // Adiciona botão para voltar a ver todas
+        listTracks.innerHTML = `<button onclick="renderLists()" class="w-full py-2 bg-gray-800 text-xs mb-2">MOSTRAR TODAS AS FAIXAS</button>` + listTracks.innerHTML;
     }
 
     function renderLists() {
-        // Lista Faixas
-        const listTracks = document.getElementById('list-tracks');
-        listTracks.innerHTML = allSongs.map((song, i) => createTrackItem(song, i, 'all')).join('');
+        // Faixas (Todas)
+        document.getElementById('list-tracks').innerHTML = allSongs.map((song, i) => createTrackItem(song, i, 'all')).join('');
 
-        // Lista Playlist
-        const listPlaylist = document.getElementById('list-playlist');
+        // Playlist
+        const playlistContainer = document.getElementById('list-playlist');
         if (myPlaylist.length > 0) {
-            listPlaylist.innerHTML = myPlaylist.map((song, i) => createTrackItem(song, i, 'playlist')).join('');
+            playlistContainer.innerHTML = myPlaylist.map((song, i) => createTrackItem(song, i, 'playlist')).join('');
         } else {
-            listPlaylist.innerHTML = `<div class="text-center py-10 text-gray-600 uppercase text-xs tracking-widest">Sua lista está vazia</div>`;
+            playlistContainer.innerHTML = `<div class="text-center py-10 text-gray-600 uppercase text-xs tracking-widest">Lista Vazia</div>`;
         }
 
         // Artistas
-        const gridArtists = document.getElementById('grid-artists');
         const uniqueArtists = [...new Set(allSongs.map(s => s.artist))];
-        gridArtists.innerHTML = uniqueArtists.map(artist => {
+        document.getElementById('grid-artists').innerHTML = uniqueArtists.map(artist => {
             const song = allSongs.find(s => s.artist === artist);
             return `
-                <div class="relative aspect-square rounded-lg overflow-hidden border border-white/10 group cursor-pointer hover:border-purple-500 transition-colors">
-                    <img src="https://img.youtube.com/vi/${song.id}/hqdefault.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
-                    <div class="absolute inset-0 bg-black/60 flex items-end p-2">
-                        <span class="text-xs font-bold text-white truncate w-full shadow-black drop-shadow-md">${artist}</span>
+                <div onclick="playArtist('${artist}')" class="relative aspect-square rounded-xl overflow-hidden border border-white/5 group cursor-pointer hover:border-purple-500 transition-all bg-gray-900">
+                    <img src="https://img.youtube.com/vi/${song.id}/hqdefault.jpg" class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent flex items-end p-2">
+                        <span class="text-[10px] font-bold text-white truncate w-full uppercase tracking-wider">${artist}</span>
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                         <span class="material-symbols-rounded text-white text-4xl drop-shadow-lg">play_circle</span>
                     </div>
                 </div>
             `;
@@ -432,74 +451,131 @@
     }
 
     function createTrackItem(song, index, context) {
-        const isMyList = context === 'playlist';
-        const actionBtn = isMyList 
-            ? `<button onclick="removeFromPlaylist(${index}, event)" class="p-2 text-red-500 hover:text-red-300"><span class="material-symbols-rounded">remove_circle</span></button>`
-            : `<button onclick="addToPlaylist(${index}, event)" class="p-2 text-gray-500 hover:text-green-400"><span class="material-symbols-rounded">add_circle</span></button>`;
+        // Se contexto for 'artist', precisamos achar o indice real na lista filtrada, mas por simplificação, passamos o objeto
+        // Aqui o onclick precisa ser esperto.
+        const isPlaylist = context === 'playlist';
+        
+        // Botão de ação
+        const btnIcon = isPlaylist ? 'remove_circle' : 'add_circle';
+        const btnColor = isPlaylist ? 'text-red-500' : 'text-gray-500 hover:text-green-500';
+        const btnAction = isPlaylist ? `removeFromPlaylist('${song.id}', event)` : `addToPlaylist('${song.id}', event)`;
 
+        // Onclick da linha toca a musica
+        // Precisamos saber o indice correto baseado na lista atual.
+        // Simplificação: vamos usar playById ou recarregar a lista no contexto. 
+        // Para manter simples: loadSong usa índice. Se a lista visual muda, o indice muda.
+        
         return `
-            <div onclick="loadSong(${index}, '${context}')" class="btn-frenetic flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-transparent hover:border-purple-500/30 cursor-pointer transition-all active:bg-purple-900/20">
-                <img src="https://img.youtube.com/vi/${song.id}/default.jpg" class="h-10 w-10 rounded object-cover opacity-70">
+            <div onclick="loadSong(${index}, '${context}')" class="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-transparent hover:border-purple-500/30 hover:bg-white/10 cursor-pointer group">
+                <img src="https://img.youtube.com/vi/${song.id}/default.jpg" class="h-10 w-10 rounded-lg object-cover opacity-80">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-gray-200 truncate">${song.title}</p>
-                    <p class="text-[10px] text-gray-400 uppercase tracking-wider truncate">${song.artist}</p>
+                    <p class="text-sm font-bold text-gray-200 truncate group-hover:text-purple-300">${song.title}</p>
+                    <p class="text-[10px] text-gray-500 uppercase truncate">${song.artist}</p>
                 </div>
-                ${actionBtn}
+                <button onclick="${btnAction}" class="p-3 ${btnColor} transition-colors"><span class="material-symbols-rounded text-xl">${btnIcon}</span></button>
             </div>
         `;
     }
 
-    function addToPlaylist(index, event) {
-        event.stopPropagation();
-        const song = allSongs[index];
-        if (!myPlaylist.some(s => s.id === song.id)) {
+    function addToPlaylist(id, e) {
+        e.stopPropagation();
+        const song = allSongs.find(s => s.id === id);
+        if (!myPlaylist.some(s => s.id === id)) {
             myPlaylist.push(song);
-            renderLists();
+            renderLists(); // Atualiza UI
+            // Feedback visual
+            const btn = e.currentTarget;
+            btn.innerHTML = '<span class="material-symbols-rounded text-xl text-green-500">check</span>';
         }
     }
 
-    function removeFromPlaylist(index, event) {
-        event.stopPropagation();
-        myPlaylist.splice(index, 1);
+    function removeFromPlaylist(id, e) {
+        e.stopPropagation();
+        myPlaylist = myPlaylist.filter(s => s.id !== id);
         renderLists();
     }
 
+    // --- FUNCIONALIDADES DO MENU ---
+    function toggleMenu() {
+        const menu = document.getElementById('side-menu');
+        const overlay = document.getElementById('menu-overlay');
+        const isOpen = menu.classList.contains('open');
+        isOpen ? menu.classList.remove('open') : menu.classList.add('open');
+        isOpen ? overlay.classList.add('hidden') : overlay.classList.remove('hidden');
+    }
+
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+        toggleMenu(); // Fecha o menu lateral ao abrir modal
+    }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // Avatar
+    function setAvatar(emoji) {
+        // Cria um SVG dinâmico com o emoji ou usa dicebear
+        const url = `https://api.dicebear.com/7.x/bottts/svg?seed=${emoji}`;
+        document.getElementById('profile-pic-display').style.backgroundImage = `url('${url}')`;
+        // Alternativa simples: colocar o emoji texto numa div
+        if(emoji.length < 5) {
+             // É um emoji unicode
+             document.getElementById('profile-pic-display').style.backgroundImage = 'none';
+             document.getElementById('profile-pic-display').innerText = emoji;
+             document.getElementById('profile-pic-display').className = "w-20 h-20 rounded-full border-2 border-purple-500 bg-black flex items-center justify-center text-4xl shadow-[0_0_15px_#9d00ff]";
+        }
+        closeModal('modal-profile');
+    }
+
+    // Configurações
+    function setTheme(color) {
+        document.body.className = document.body.className.replace(/theme-\w+/g, '');
+        if(color !== 'purple') document.body.classList.add(`theme-${color}`);
+    }
+    function setLang(lang) {
+        alert(lang === 'pt' ? 'Idioma definido: Português' : 'Language set: English');
+    }
+    function toggleBold() {
+        document.body.classList.toggle('font-bold-mode');
+        const knob = document.getElementById('bold-knob');
+        const toggle = document.getElementById('bold-toggle');
+        if(document.body.classList.contains('font-bold-mode')) {
+            knob.style.transform = 'translateX(24px)';
+            toggle.style.backgroundColor = 'var(--neon-primary)';
+        } else {
+            knob.style.transform = 'translateX(0)';
+            toggle.style.backgroundColor = '#4b5563';
+        }
+    }
+
+    // Logout
+    function systemLogout() {
+        const screen = document.getElementById('shutdown-screen');
+        screen.classList.remove('hidden');
+        document.body.classList.add('shutdown-anim');
+        if(player) player.stopVideo();
+        setTimeout(() => {
+            alert("Sistema desligado. Recarregue a página para reiniciar.");
+            window.location.reload();
+        }, 3000);
+    }
+
+    // Navegação
     function switchTab(tab) {
         ['tracks', 'playlist', 'artists'].forEach(t => {
             document.getElementById(`tab-${t}`).classList.remove('border-purple-600', 'text-purple-400', 'bg-white/5');
             document.getElementById(`tab-${t}`).classList.add('border-transparent', 'text-gray-500');
             document.getElementById(`view-${t}`).classList.add('hidden');
         });
-        
-        const activeBtn = document.getElementById(`tab-${tab}`);
-        activeBtn.classList.remove('border-transparent', 'text-gray-500');
-        activeBtn.classList.add('border-purple-600', 'text-purple-400', 'bg-white/5');
+        document.getElementById(`tab-${tab}`).classList.remove('border-transparent', 'text-gray-500');
+        document.getElementById(`tab-${tab}`).classList.add('border-purple-600', 'text-purple-400', 'bg-white/5');
         document.getElementById(`view-${tab}`).classList.remove('hidden');
-    }
-
-    function startProgressLoop() {
-        if (!player || !isPlaying) return;
-        const duration = player.getDuration();
-        const currentTime = player.getCurrentTime();
-        if (duration > 0) {
-            const pct = (currentTime / duration) * 100;
-            document.getElementById('progress-fill').style.width = pct + '%';
-        }
-        requestAnimationFrame(startProgressLoop);
-    }
-
-    function flashScreen() {
-        const overlay = document.getElementById('click-effect');
-        overlay.style.backgroundColor = ['#9d00ff', '#ff004c', '#ffff00'][Math.floor(Math.random()*3)];
-        overlay.style.opacity = '0.3';
-        setTimeout(() => overlay.style.opacity = '0', 150);
     }
 
     function triggerPanic() {
         document.body.classList.toggle('panic-active');
-        if (isPlaying) togglePlay();
+        if(document.body.classList.contains('panic-active') && isPlaying) player.pauseVideo();
     }
 
+    // Iniciar
     renderLists();
 </script>
 </body>
