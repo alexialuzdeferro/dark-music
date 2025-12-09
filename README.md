@@ -2,7 +2,7 @@
 
 > Sistema de áudio web imersivo com estética Gótica/Darkwave, simulando um sistema operacional minimalista.
 
-![Project Status](https://img.shields.io/badge/status-online-purple)
+![Project Status](https://alexialuzdeferro.github.io/dark-music/)
 
 ## 🌑 Sobre o Projeto
 
