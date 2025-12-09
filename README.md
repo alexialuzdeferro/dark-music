@@ -2,7 +2,7 @@
 
 > Sistema de áudio web imersivo com estética Gótica/Darkwave, simulando um sistema operacional minimalista.
 
-!(https://alexialuzdeferro.github.io/dark-music/)
+https://alexialuzdeferro.github.io/dark-music/
 
 ## 🌑 Sobre o Projeto
 
