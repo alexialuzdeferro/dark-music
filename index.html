@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Darkwave OS - Color Change Fixed</title>
+<title>DARK MUSIC - Visual System</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet"/>
@@ -16,7 +16,6 @@
           colors: {
             "background-dark": "#050005",
             "card-dark": "#0a000a",
-            // AQUI ESTÁ O SEGREDO: Cores mapeadas para variáveis CSS
             "neon-main": "var(--neon-primary)",
             "neon-sec": "var(--neon-secondary)",
           },
@@ -30,13 +29,11 @@
 </script>
 
 <style>
-    /* Definição das Cores Padrão (Roxo) */
     :root {
         --neon-primary: #9d00ff;
         --neon-secondary: #ff004c;
     }
     
-    /* Temas - Alteram as variáveis globais */
     body.theme-red { --neon-primary: #ff0000; --neon-secondary: #8a0000; }
     body.theme-green { --neon-primary: #00ff00; --neon-secondary: #004400; }
     body.theme-blue { --neon-primary: #0088ff; --neon-secondary: #000088; }
@@ -48,10 +45,9 @@
         background-color: #000;
         overflow-x: hidden; touch-action: pan-y; user-select: none;
         -webkit-tap-highlight-color: transparent;
-        transition: color 0.5s ease, border-color 0.5s ease; /* Transição suave de cor */
+        transition: color 0.5s ease, border-color 0.5s ease;
     }
 
-    /* Sliders do Equalizador com a cor do tema */
     input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
     input[type=range]::-webkit-slider-thumb {
         -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
@@ -60,7 +56,6 @@
     }
     input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: #333; border-radius: 2px; }
 
-    /* Animações */
     #side-menu { transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; }
     #side-menu.open { transform: translateX(0); box-shadow: 5px 0 30px rgba(0,0,0,0.8); }
     
@@ -69,17 +64,13 @@
     .eq-bar:nth-child(1) { animation-duration: 0.4s; }
     .eq-bar:nth-child(odd) { animation-duration: 0.6s; }
 
-    /* Modals */
     .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(5px); }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-content { transform: scale(0.9); transition: transform 0.3s; }
     .modal-overlay.active .modal-content { transform: scale(1); }
 
-    /* Efeitos de Texto e Brilho Dinâmicos */
     .text-glow { text-shadow: 0 0 10px var(--neon-primary); }
-    .border-glow { box-shadow: 0 0 10px var(--neon-primary), inset 0 0 5px var(--neon-primary); }
     
-    /* Panic Mode */
     @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 100% { transform: translate(-1px, -2px) rotate(-1deg); } }
     .panic-active { animation: shake 0.1s infinite; filter: invert(1) grayscale(100%); border: 2px solid red; }
 </style>
@@ -115,6 +106,7 @@
                 <span class="font-medium tracking-wide">Sair / Desligar</span>
             </button>
         </nav>
+        <div class="p-4 text-center text-[10px] text-gray-600 uppercase tracking-[0.4em]">DARK MUSIC OS v1.0</div>
     </aside>
 
     <div id="modal-profile" class="modal-overlay fixed inset-0 z-80 flex items-center justify-center bg-black/90">
@@ -146,11 +138,6 @@
                 <div class="flex items-center gap-4"><span class="text-xs w-8 text-gray-500">BASS</span><input type="range" min="0" max="100" value="80"></div>
                 <div class="flex items-center gap-4"><span class="text-xs w-8 text-gray-500">MID</span><input type="range" min="0" max="100" value="50"></div>
                 <div class="flex items-center gap-4"><span class="text-xs w-8 text-gray-500">TREB</span><input type="range" min="0" max="100" value="60"></div>
-            </div>
-            <div class="grid grid-cols-3 gap-2 mb-4">
-                <button class="bg-white/5 py-2 text-xs rounded hover:bg-neon-main hover:text-white transition">BASS BOOST</button>
-                <button class="bg-white/5 py-2 text-xs rounded hover:bg-neon-main hover:text-white transition">VOCAL</button>
-                <button class="bg-white/5 py-2 text-xs rounded hover:bg-neon-main hover:text-white transition">DARKWAVE</button>
             </div>
             <button onclick="closeModal('modal-eq')" class="w-full py-3 bg-neon-main rounded-xl font-bold text-white shadow-lg shadow-neon-main/50 transition-colors">APLICAR</button>
         </div>
@@ -195,7 +182,7 @@
             </button>
             <h1 class="text-xl font-bold tracking-[0.3em] uppercase text-transparent bg-clip-text animate-pulse" 
                 style="background-image: linear-gradient(to right, var(--neon-primary), #fff, var(--neon-primary));">
-                DARKWAVE
+                DARK MUSIC
             </h1>
             <button onclick="triggerPanic()" class="p-2 border border-red-900 bg-red-900/20 rounded-full animate-pulse">
                 <span class="material-symbols-rounded text-red-500">warning</span>
@@ -244,8 +231,8 @@
                 <div id="yt-player" class="absolute inset-0 opacity-0 pointer-events-none"></div>
             </div>
             <div class="flex-1 min-w-0 flex flex-col justify-center">
-                <p id="track-title" class="truncate text-sm font-bold text-white">Darkwave OS</p>
-                <p id="track-artist" class="truncate text-xs text-neon-main font-medium">Sistema Pronto</p>
+                <p id="track-title" class="truncate text-sm font-bold text-white">DARK MUSIC</p>
+                <p id="track-artist" class="truncate text-xs text-neon-main font-medium">System Online</p>
             </div>
             <button onclick="togglePlay()" id="btn-play" class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black hover:bg-neon-main hover:text-white transition shadow-[0_0_15px_rgba(255,255,255,0.2)]">
                 <span class="material-symbols-rounded text-3xl">play_arrow</span>
@@ -458,12 +445,8 @@
         closeModal('modal-profile');
     }
 
-    // --- AQUI ESTÁ A CORREÇÃO PRINCIPAL DO TEMA ---
     function setTheme(color) {
-        // Remove classes anteriores
         document.body.classList.remove('theme-red', 'theme-green', 'theme-blue', 'theme-yellow');
-        
-        // Adiciona a nova classe se não for o roxo padrão
         if(color !== 'purple') {
             document.body.classList.add(`theme-${color}`);
         }
